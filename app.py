@@ -32,6 +32,8 @@ DEVICE = cfg['device']
 
 # Ensure models directory exists
 Path('models').mkdir(exist_ok=True)
+# Ensure test images directory exists for pre-provided examples
+Path('test_images').mkdir(exist_ok=True)
 
 
 def get_image_transform(is_training: bool = False):
@@ -317,6 +319,10 @@ def main():
 
     with col1:
         st.subheader('Carica immagine')
+        # Default
+        img = None
+
+        # Upload utente
         uploaded_file = st.file_uploader("Trascina o seleziona un'immagine", type=["jpg", "jpeg", "png"]) 
         if uploaded_file is not None:
             try:
@@ -325,9 +331,35 @@ def main():
             except Exception as e:
                 st.error(f"Impossibile aprire l'immagine: {e}")
                 img = None
+
+        # Selezione immagini di test prefornite
+        test_dir = Path('test_images')
+        test_files = sorted([p for p in test_dir.iterdir() if p.suffix.lower() in ('.jpg', '.jpeg', '.png')]) if test_dir.exists() else []
+
+        if test_files:
+            st.markdown('### Immagini di test disponibili')
+            names = [p.name for p in test_files]
+            if 'selected_test_image' not in st.session_state:
+                st.session_state['selected_test_image'] = None
+
+            sel = st.selectbox('Seleziona una immagine di test', options=['-- nessuna --'] + names)
+            if sel and sel != '-- nessuna --':
+                if st.button('Usa immagine di test'):
+                    st.session_state['selected_test_image'] = sel
+
+            # Mostra immagine di test selezionata (ma rispetta la priorità: upload > test)
+            if st.session_state.get('selected_test_image'):
+                sel_path = test_dir / st.session_state['selected_test_image']
+                try:
+                    if uploaded_file is None:
+                        img = Image.open(sel_path).convert('RGB')
+                        st.image(img, caption=f'Immagine di test selezionata: {sel_path.name}', use_container_width=True)
+                    else:
+                        st.caption("Hai caricato un file: verrà usato quello. Rimuovi l'upload per usare l'immagine di test.")
+                except Exception as e:
+                    st.error(f"Impossibile aprire l'immagine di test: {e}")
         else:
-            st.info('Nessuna immagine caricata — prova a trascinarne una qui.')
-            img = None
+            st.info('Nessuna immagine di test trovata. Aggiungi immagini nella cartella `test_images/`.')
 
     with col2:
         st.subheader('Fai una domanda')
