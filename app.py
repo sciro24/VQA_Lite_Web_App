@@ -350,8 +350,8 @@ def main():
         def set_temp_question(text):
             st.session_state['temp_question'] = text
             
-        ex1.button("C'è un gatto?", on_click=set_temp_question, args=("C'è un gatto?",))
-        ex2.button("Che oggetto c'è?", on_click=set_temp_question, args=("Che oggetto c'è?",))
+        ex1.button("C'è un topo?", on_click=set_temp_question, args=("C'è un topo?",))
+        ex2.button("Che cosa c'è?", on_click=set_temp_question, args=("Che cosa c'è?",))
         ex3.button("C'è una macchina?", on_click=set_temp_question, args=("C'è una macchina?",))
         
         # Se è stato cliccato un esempio, aggiorna il campo di input
