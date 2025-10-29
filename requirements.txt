@@ -1,0 +1,10 @@
+streamlit
+torch
+torchvision
+sentence-transformers
+Pillow
+numpy
+tqdm
+matplotlib
+grad-cam
+opencv-python-headless
